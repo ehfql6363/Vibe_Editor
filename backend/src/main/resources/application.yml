@@ -1,0 +1,170 @@
+spring:
+  application:
+    name: vibeEditorProject
+
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - aws-parameterstore:/vibeeditor/
+
+  session:
+    redis:
+      namespace: vibe-editor
+
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION}
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password:
+
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  security:
+    user:
+      name: ${APPLICATION_SECURITY_USER_NAME}
+      password: ${APPLICATION_SECURITY_USER_PASSWORD}
+      roles: ${APPLICATION_SECURITY_USER_ROLE}
+
+    cors:
+      allowed-origins: ${APPLICATION_SECURITY_CORS_ALLOWED_ORIGINS}
+
+    jwt:
+      secret-key: ${APPLICATION_SECURITY_JWT_SECRET_KEY}
+      access-token-expiration: ${APPLICATION_SECURITY_JWT_ACCESS_TOKEN_EXPIRATION}
+      refresh-token-expiration: ${APPLICATION_SECURITY_JWT_REFRESH_TOKEN_EXPIRATION}
+      pass-urls: ${APPLICATION_SECURITY_JWT_PASS_URLS}
+      admin-urls: ${APPLICATION_SECURITY_JWT_ADMIN_URLS}
+
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URL}
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
+          github:
+            client-name: Github
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            redirect-uri: ${GITHUB_REDIRECT_URL}
+            authorization-grant-type: authorization_code
+            scope:
+              - read:user
+              - user:email
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+  ai:
+    openai:
+      api-key: ${GPT_APIKEY}
+      base-url: ${GPT_APIURL}
+      model: ${GPT_MODEL}
+
+    anthropic:
+      api-key: ${CLAUDE_APIKEY}
+      chat:
+        options:
+          temperature: ${CLAUDE_TEMPERATURE}
+          model: ${CLAUDE_MODEL}
+          max-tokens: ${CLAUDE_MAX_TOKEN}
+      base-url: ${CLAUDE_BASEURL}
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+server:
+  shutdown: graceful
+
+app:
+  cors:
+    allow-hosts:
+      - ${ALLOW_HOST_FRONT}
+      - ${ALLOW_HOST_LOCAL}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    version: openapi_3_0
+
+logging:
+  level:
+    org.springframework.messaging.simp: DEBUG
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
+
+notion:
+  api:
+    version: ${NOTION_VERSION}
+    base_url: ${NOTION_BASEURL}
+
+management:
+  endpoints:
+    access:
+      default: none
+    web:
+      exposure:
+        include: health,info,prometheus
+      base-path: /api
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted
+    prometheus:
+      access: unrestricted
+
+aes-algo: ${AES_ALGORITHM}
+aes-secret-key: ${AES_ALGORITHM_KEY}
+
+ssafy:
+  client-id: ${SSAFY_CLIENT_ID}
+  secret-key: ${SSAFY_SECRET_KEY}
+  base_url: ${SSAFY_BASE_URL}
+  redirect_url: ${SSAFY_REDIRECT_URL}

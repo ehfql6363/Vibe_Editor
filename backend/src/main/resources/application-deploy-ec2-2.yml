@@ -1,0 +1,145 @@
+spring:
+  application:
+    name: vibeEditorProject
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION}
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - aws-parameterstore:/vibeeditor/
+
+  session:
+    redis:
+      namespace: vibe-editor
+
+  datasource:
+    url: ${datasource.url-2}
+    username: ${datasource.username}
+    password: ${datasource.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    mongodb:
+      uri: ${mongodb.url-2}
+    redis:
+      host: ${redis.host2}
+      port: ${redis.port}
+      password: ${redis.password}
+
+  security:
+    jwt:
+      secret-key: ${security.jwt-secret-key}
+      access-token-expiration: ${security.jwt-access.expiration}
+      refresh-token-expiration: ${security.jwt-refresh.expiration}
+
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: ${google.client-id}
+            client-secret: ${google.client-secret}
+            redirect-uri: ${google.redirect-url}
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
+          github:
+            client-name: Github
+            client-id: ${github.client-id}
+            client-secret: ${github.client-secret}
+            redirect-uri: ${github.redirect-url}
+            authorization-grant-type: authorization_code
+            scope:
+              - read:user
+              - user:email
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+  ai:
+    openai:
+      api-key: ${gpt.api-key}
+      base-url: ${gpt.api-url}
+      model: ${gpt.model}
+
+    anthropic:
+      api-key: ${claude.api-key}
+      chat:
+        options:
+          temperature: ${claude.temperature}
+          model: ${claude.model}
+          max-tokens: ${claude.max-token}
+
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+server:
+  shutdown: graceful
+
+app:
+  cors:
+    allow-hosts:
+      - ${allow-host.front}
+      - ${allow-host.local}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    version: openapi_3_0
+
+logging:
+  level:
+    org.springframework.messaging.simp: DEBUG
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
+notion:
+  api:
+    version: ${notion.version}
+    base_url: ${notion.baseurl}
+
+management:
+  endpoints:
+    access:
+      default: none
+    web:
+      exposure:
+        include: health,info,prometheus
+      base-path: /api
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted
+
+aes-algo: ${security.aes-algorithm}
+aes-secret-key: ${security.aes-key}
